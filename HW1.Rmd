@@ -1,0 +1,42 @@
+---
+title: "HW1"
+author: "d06521014"
+date: "2017年9月18日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 期末報告名稱:推與噓
+報告工作項目:
+
+1.由bbs站搜集新聞關鍵詞，分析重大事件推與噓的數量來判斷支持或反對的力量
+
+2.分析重大事件延燒的時間(鄉民關心的時間)
+
+3.分類鄉民關心的議題
+
+參考資料:
+
+1.https://goo.gl/YUtfd6
+
+2.https://blog.gtwang.org/r/facebook-social-media-mining-with-r/
+
+3.http://blog.bryanbigdata.com/2014/08/r-ptt-wantedsocial-network-analysis.html
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

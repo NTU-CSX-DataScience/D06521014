@@ -1,0 +1,140 @@
+---
+title: "HW2_d06521014"
+author: "d06521014@ntu.edu.tw"
+date: "2017年10月3日"
+output: html_document
+---
+#HW2 Airplane Crashes Since 1908
+Analysis of the "Airplane Crashes and Fatalities Since 1908"  dataset(source:https://opendata.socrata.com/Government/Airplane-Crashes-and-Fatalities-Since-1908/q2te-8cvq)
+The main purpose of this homework is to practice dypler package of R, including 'filter', 'select','mutate', 'arrange', summarise, and group_by. On the other hand, tring to find any interesting trends or behaviors  when analyzing the dataset.
+
+##Import data and View data
+
+```{r eval=TRUE}
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+```
+```{r}
+crashdata<- read.csv("Airplane_Crashes_and_Fatalities_Since_1908.csv", header=T, sep=",")
+dim(crashdata)
+str(crashdata)
+```
+##Import data and View data
+###Q1:the planes crashed each month
+
+
+```{r}
+#Date sturcture is mm/dd/yyyy
+crashdata$year<-substr(crashdata$Date, start =7 , stop =10 )
+crashdata$month<-as.factor(substr(crashdata$Date, start =1 , stop =2 ))
+crashdata$day<-substr(crashdata$Date, start =4 , stop =5)
+
+#death events in each month
+death_month<-
+  crashdata%>%
+  group_by(month)%>%
+  summarise(cumulative_number=n())
+ggplot(death_month, aes(x=month,y=cumulative_number)) + 
+  geom_bar(stat="identity")+
+  geom_text(aes(label=cumulative_number),vjust=1.5,colour="white")
+```
+
+其中456月較低，但發生空難次數各月並沒有顯著的差別。
+
+###Q2:the planes crashed per year
+###Q3:people aboard per year during crashes
+###Q4:people dead per year during crashes
+###Q5:people survived rate per year during crashes
+```{r}
+#death events in each year
+death_year<-
+  crashdata%>%
+  select(year,Aboard,Fatalities)%>%
+  group_by(year)%>%
+  na.omit()%>%
+  summarise(events_number=n(),aboard=sum(Aboard),fatalities=sum(Fatalities),survival=sum(Aboard)-sum(Fatalities))
+
+death_year$year<-as.integer(death_year$year)
+death_year$survival_rate<-death_year$survival/death_year$aboard
+g1<-ggplot(death_year, aes(year,events_number)) + 
+  geom_line()+
+  ggtitle("number of events")+
+  theme(plot.title=element_text(vjust=-1.5))+
+  theme(axis.title.x=element_blank())
+g2<-ggplot(death_year, aes(year,aboard)) + 
+  geom_line()+
+  ggtitle("aboard ")+
+            theme(plot.title=element_text(vjust=-1.5))+
+  theme(axis.title.x=element_blank())
+g3<-ggplot(death_year, aes(year,fatalities)) + 
+  geom_line()+
+  ggtitle("fatalities" )+
+            theme(plot.title=element_text(vjust=-1.5))+
+  theme(axis.title.x=element_blank())
+g4<-ggplot(death_year, aes(year,survival_rate)) + 
+  geom_line()+
+  ggtitle("survival_rate")+
+  theme(plot.title=element_text(vjust=-1.5))+
+  theme(axis.title.x=element_blank())
+grid.arrange(g1, g2,g3,g4,nrow = 4)
+
+```
+
+就年度來看，空難次數由1908年起開始隨時間增加，到約1973年達到最高峰，但2000年以後亦逐步下降。
+猜測1908年起增加係因飛機數量增加，飛航的總次數亦增加，但資料目前欠缺飛航的總次數，無法佐證。
+空難的登機人數、死亡人數和空難次數大致有一致的趨勢。
+但在死亡率部份，反到1998年最高，近年來亦無減少的態勢，可見，時代進步亦無法降低空難之死亡率。
+
+###Q6:Airlines to avoid
+```{r}
+death_operator<-
+  crashdata%>%
+  filter(Fatalities>1& !is.na(crashdata$Operator) )%>%
+  select(Operator,Aboard,Fatalities)%>%
+  group_by(Operator)%>%
+  na.omit()%>%
+  summarise(cumulative_number=n(),fatalities=sum(Fatalities))%>%
+  arrange(desc(fatalities))
+death_operator_top<-head(death_operator,5)
+
+ggplot(death_operator_top, aes(x=Operator,y=fatalities)) + 
+  geom_bar(stat="identity")+
+  geom_text(aes(label=fatalities),vjust=1.5,colour="white")
+```
+因為太多家航空公司會無法聚焦，直接用head函數取前5名的航空公司，
+Aeroflot 俄羅斯航空公開股份公司，簡稱俄航，是俄羅斯的國家航空公司
+Military - U.S. Air Force
+Air France 美國空軍
+American Airlines 美國航空
+Pan American World Airways 泛美航空
+前5間最常發生空難公司有4間是美國，一間是俄羅斯
+
+###Q6:問題請教 本來還有進行空難地點分析
+```{r}
+death_location_tmp<-
+  crashdata%>%
+  select(Location,Aboard,Fatalities)%>%
+  group_by(Location)%>%
+  na.omit()
+x<-strsplit(as.character(death_location_tmp$Location), split = ",")
+x[[1]]
+tail(x[[1]],1)
+
+for (i in 1:length(death_location_tmp)){
+  death_location_tmp$location[i]<-tail(x[[i]],1)
+}
+#此處出現問題，想把death_location_tmp取,後的字，但無法成功
+
+death_location<-death_location_tmp%>%
+  group_by(location)%>%
+  summarise(cumulative_number=n(),fatalities=sum(Fatalities))%>%
+  arrange(desc(fatalities))
+  
+ death_location_top<- head(death_location,5)
+ ggplot(death_location_top, aes(x=location,y=fatalities)) + 
+  geom_bar(stat="identity")+
+  geom_text(aes(label=fatalities),vjust=1.5,colour="white")
+ 
+```
+

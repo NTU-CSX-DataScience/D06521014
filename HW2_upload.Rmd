@@ -1,7 +1,7 @@
 ---
 title: "HW2_d06521014"
 author: "d06521014@ntu.edu.tw"
-date: "2017¦~10¤ë3¤é"
+date: "2017å¹´10æœˆ3æ—¥"
 output: html_document
 ---
 #HW2 Airplane Crashes Since 1908
@@ -40,7 +40,7 @@ ggplot(death_month, aes(x=month,y=cumulative_number)) +
   geom_text(aes(label=cumulative_number),vjust=1.5,colour="white")
 ```
 
-¨ä¤¤456¤ë¸û§C¡A¦ıµo¥ÍªÅÃø¦¸¼Æ¦U¤ë¨Ã¨S¦³ÅãµÛªº®t§O¡C
+å…¶ä¸­456æœˆè¼ƒä½ï¼Œä½†ç™¼ç”Ÿç©ºé›£æ¬¡æ•¸å„æœˆä¸¦æ²’æœ‰é¡¯è‘—çš„å·®åˆ¥ã€‚
 
 ###Q2:the planes crashed per year
 ###Q3:people aboard per year during crashes
@@ -81,10 +81,10 @@ grid.arrange(g1, g2,g3,g4,nrow = 4)
 
 ```
 
-´N¦~«×¨Ó¬İ¡AªÅÃø¦¸¼Æ¥Ñ1908¦~°_¶}©lÀH®É¶¡¼W¥[¡A¨ì¬ù1973¦~¹F¨ì³Ì°ª®p¡A¦ı2000¦~¥H«á¥ç³v¨B¤U­°¡C
-²q´ú1908¦~°_¼W¥[«Y¦]­¸¾÷¼Æ¶q¼W¥[¡A­¸¯èªºÁ`¦¸¼Æ¥ç¼W¥[¡A¦ı¸ê®Æ¥Ø«e¤í¯Ê­¸¯èªºÁ`¦¸¼Æ¡AµLªk¦õÃÒ¡C
-ªÅÃøªºµn¾÷¤H¼Æ¡B¦º¤`¤H¼Æ©MªÅÃø¦¸¼Æ¤j­P¦³¤@­PªºÁÍ¶Õ¡C
-¦ı¦b¦º¤`²v³¡¥÷¡A¤Ï¨ì1998¦~³Ì°ª¡Aªñ¦~¨Ó¥çµL´î¤ÖªººA¶Õ¡A¥i¨£¡A®É¥N¶i¨B¥çµLªk­°§CªÅÃø¤§¦º¤`²v¡C
+å°±å¹´åº¦ä¾†çœ‹ï¼Œç©ºé›£æ¬¡æ•¸ç”±1908å¹´èµ·é–‹å§‹éš¨æ™‚é–“å¢åŠ ï¼Œåˆ°ç´„1973å¹´é”åˆ°æœ€é«˜å³°ï¼Œä½†2000å¹´ä»¥å¾Œäº¦é€æ­¥ä¸‹é™ã€‚
+çŒœæ¸¬1908å¹´èµ·å¢åŠ ä¿‚å› é£›æ©Ÿæ•¸é‡å¢åŠ ï¼Œé£›èˆªçš„ç¸½æ¬¡æ•¸äº¦å¢åŠ ï¼Œä½†è³‡æ–™ç›®å‰æ¬ ç¼ºé£›èˆªçš„ç¸½æ¬¡æ•¸ï¼Œç„¡æ³•ä½è­‰ã€‚
+ç©ºé›£çš„ç™»æ©Ÿäººæ•¸ã€æ­»äº¡äººæ•¸å’Œç©ºé›£æ¬¡æ•¸å¤§è‡´æœ‰ä¸€è‡´çš„è¶¨å‹¢ã€‚
+ä½†åœ¨æ­»äº¡ç‡éƒ¨ä»½ï¼Œååˆ°1998å¹´æœ€é«˜ï¼Œè¿‘å¹´ä¾†äº¦ç„¡æ¸›å°‘çš„æ…‹å‹¢ï¼Œå¯è¦‹ï¼Œæ™‚ä»£é€²æ­¥äº¦ç„¡æ³•é™ä½ç©ºé›£ä¹‹æ­»äº¡ç‡ã€‚
 
 ###Q6:Airlines to avoid
 ```{r}
@@ -102,15 +102,15 @@ ggplot(death_operator_top, aes(x=Operator,y=fatalities)) +
   geom_bar(stat="identity")+
   geom_text(aes(label=fatalities),vjust=1.5,colour="white")
 ```
-¦]¬°¤Ó¦h®a¯èªÅ¤½¥q·|µLªk»EµJ¡Aª½±µ¥Îhead¨ç¼Æ¨ú«e5¦Wªº¯èªÅ¤½¥q¡A
-Aeroflot «XÃ¹´µ¯èªÅ¤½¶}ªÑ¥÷¤½¥q¡AÂ²ºÙ«X¯è¡A¬O«XÃ¹´µªº°ê®a¯èªÅ¤½¥q
+å› ç‚ºå¤ªå¤šå®¶èˆªç©ºå…¬å¸æœƒç„¡æ³•èšç„¦ï¼Œç›´æ¥ç”¨headå‡½æ•¸å–å‰5åçš„èˆªç©ºå…¬å¸ï¼Œ
+Aeroflot ä¿„ç¾…æ–¯èˆªç©ºå…¬é–‹è‚¡ä»½å…¬å¸ï¼Œç°¡ç¨±ä¿„èˆªï¼Œæ˜¯ä¿„ç¾…æ–¯çš„åœ‹å®¶èˆªç©ºå…¬å¸
 Military - U.S. Air Force
-Air France ¬ü°êªÅ­x
-American Airlines ¬ü°ê¯èªÅ
-Pan American World Airways ªx¬ü¯èªÅ
-«e5¶¡³Ì±`µo¥ÍªÅÃø¤½¥q¦³4¶¡¬O¬ü°ê¡A¤@¶¡¬O«XÃ¹´µ
+Air France ç¾åœ‹ç©ºè»
+American Airlines ç¾åœ‹èˆªç©º
+Pan American World Airways æ³›ç¾èˆªç©º
+å‰5é–“æœ€å¸¸ç™¼ç”Ÿç©ºé›£å…¬å¸æœ‰4é–“æ˜¯ç¾åœ‹ï¼Œä¸€é–“æ˜¯ä¿„ç¾…æ–¯
 
-###Q6:°İÃD½Ğ±Ğ ¥»¨ÓÁÙ¦³¶i¦æªÅÃø¦aÂI¤ÀªR
+###Q6:å•é¡Œè«‹æ•™ æœ¬ä¾†é‚„æœ‰é€²è¡Œç©ºé›£åœ°é»åˆ†æ
 ```{r}
 death_location_tmp<-
   crashdata%>%
@@ -124,7 +124,7 @@ tail(x[[1]],1)
 for (i in 1:length(death_location_tmp)){
   death_location_tmp$location[i]<-tail(x[[i]],1)
 }
-#¦¹³B¥X²{°İÃD¡A·Q§âdeath_location_tmp¨ú,«áªº¦r¡A¦ıµLªk¦¨¥\
+#æ­¤è™•å‡ºç¾å•é¡Œï¼Œæƒ³æŠŠdeath_location_tmpå–,å¾Œçš„å­—ï¼Œä½†ç„¡æ³•æˆåŠŸ
 
 death_location<-death_location_tmp%>%
   group_by(location)%>%

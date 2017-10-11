@@ -98,7 +98,7 @@ death_operator<-
   arrange(desc(fatalities))
 death_operator_top<-head(death_operator,5)
 
-ggplot(death_operator_top, aes(x=Operator,y=fatalities)) + 
+ggplot(death_operator_top, aes(x=reorder(Operator, -fatalities),y=fatalities)) + 
   geom_bar(stat="identity")+
   geom_text(aes(label=fatalities),vjust=1.5,colour="white")
 ```
@@ -120,9 +120,16 @@ death_location_tmp<-
 x<-strsplit(as.character(death_location_tmp$Location), split = ",")
 x[[1]]
 tail(x[[1]],1)
-
-for (i in 1:length(death_location_tmp)){
-  death_location_tmp$location[i]<-tail(x[[i]],1)
+death_location_tmp$location = as.character(death_location_tmp$Location)
+for (i in 1:length(death_location_tmp$Location)){
+  if( length(tail(x[[i]],1)) == 0 )
+  {
+    death_location_tmp$location[i] = ""
+  }
+  else
+  {
+    death_location_tmp$location[i]<-tail(x[[i]],1)
+  }
 }
 #此處出現問題，想把death_location_tmp取,後的字，但無法成功
 
@@ -132,7 +139,7 @@ death_location<-death_location_tmp%>%
   arrange(desc(fatalities))
   
  death_location_top<- head(death_location,5)
- ggplot(death_location_top, aes(x=location,y=fatalities)) + 
+ ggplot(death_location_top, aes(x=reorder(location, -fatalities) ,y=fatalities)) + 
   geom_bar(stat="identity")+
   geom_text(aes(label=fatalities),vjust=1.5,colour="white")
  

@@ -1,0 +1,183 @@
+---
+title: "hw3_upload"
+author: "d06521014"
+date: 2017/1/1
+output: html_document
+---
+
+```{r warning=FALSE ,include=FALSE}
+library(devtools)
+library(Rfacebook)
+library(httr)
+library(wordcloud)
+library(wordcloud2)
+library("jiebaR")#chinese word separate
+library(magrittr)
+library(dplyr)
+
+Sys.setlocale(category = "LC_ALL", locale = "cht")
+data.path<-"c:/R/R_facebook/193424980763650/" # fans water resources agency
+setwd(data.path)
+
+
+```
+#Get fb token
+####https://developers.facebook.com/tools/explorer/145634995501895/
+####copy token paste to  token<-
+####me$name 確認身份
+```{r warning=FALSE}
+
+token <- "EAACEdEose0cBAKC6CpsZBsJmdqIj1frjAhDSohresANjulIZAZBL0kqaewyNMKSZCo1VdTyLZCZBT4QQ4b1yN8o10zlHDMsuPP0zNmqvdTvUFSeceSenZANc9zSQZAtnu8vZAnOCSmSYRB5SHBZCyAd3w8lXkEm0dv2B1ZCY1Evx7TdjBjIQrZBdwbcj8IIfXFrsrxBe1oTAdY2fRQZDZD"
+me <- getUsers("me", token, private_info = TRUE)
+me$name
+
+
+```
+
+
+#Get fb page data 從FB捉取文字資料
+#### pageid from fb name 
+#### getPage function
+```{r warning=FALSE}
+page.id <- "193424980763650" #0
+page <- getPage(page.id, token, n = 600)
+str(page)
+names( page )
+page$message[ 1:5 ]
+
+```
+#Plot each month like  share comment 畫每月讚、分享與評論的情況
+```{r warning=FALSE}
+format.facebook.date <- function(datestring) {
+  date <- as.POSIXct(datestring, format = "%Y-%m-%dT%H:%M:%S+0000", tz = "GMT")
+}
+
+# aggregate metric counts over month
+aggregate.metric <- function(metric) {
+  m <- aggregate(page[[paste0(metric, "_count")]], list(month = page$month),
+                 mean)
+  m$month <- as.Date(paste0(m$month, "-15"))
+  m$metric <- metric
+  return(m)
+}
+# create data frame with average metric counts per month
+page$datetime <- format.facebook.date(page$created_time)
+page$month <- format(page$datetime, "%Y-%m")
+df.list <- lapply(c("likes", "comments", "shares"), aggregate.metric)
+df <- do.call(rbind, df.list)
+# visualize evolution in metric
+
+library(ggplot2)
+library(scales)
+ggplot(df, aes(x = month, y = x, group = metric)) +
+  geom_line(aes(color = metric)) +
+  scale_y_log10("Average count per post",
+                breaks = c(2, 10, 50, 100)) +
+  theme_bw() +
+  theme(axis.title.x = element_blank())
+
+```
+#Use regular expression to extract words
+####Rwordseg cannot be installed 因為Rwordseg不能安裝，直接用regular expression取代無用的字 
+
+```{r warning=FALSE}
+page$message1<-page$message
+page$message1<-gsub(pattern = "http(s)?://[a-zA-Z0-9\\./_]+", page$message1, replacement = "")
+page$message1<-gsub(pattern = "[A-Za-z]+", page$message1, replacement = "")
+page$message1<-gsub(pattern = "[0-9]+\\.[0-9]+", page$message1, replacement = "")
+page$message1<-gsub(pattern = "[0-9]+", page$message1, replacement = "")
+page$message1<-gsub(pattern = " ", replacement = "", page$message1)
+page$message1<-gsub(pattern = ":", replacement = "", page$message1)
+page$message1<-gsub(pattern = "【", page$message1, replacement = "")
+page$message1<-gsub(pattern = "】", page$message1, replacement = "")
+page$message1<-gsub(pattern = "，", page$message1, replacement = "")
+page$message1<-gsub(pattern = "；", page$message1, replacement = "")
+page$message1<-gsub(pattern = "：", page$message1, replacement = "")
+page$message1<-gsub(pattern = "？", page$message1, replacement = "")
+page$message1<-gsub(pattern = "／", page$message1, replacement = "")
+page$message1<-gsub(pattern = "。", page$message1, replacement = "")
+page$message1<-gsub(pattern = "「", page$message1, replacement = "")
+page$message1<-gsub(pattern = "」", page$message1, replacement = "")
+page$message1<-gsub(pattern = "◎", page$message1, replacement = "")
+page$message1<-gsub(pattern = "…", page$message1, replacement = "")
+page$message1<-gsub(pattern = "！", page$message1, replacement = "")
+page$message1<-gsub(pattern = "（", page$message1, replacement = "")
+page$message1<-gsub(pattern = "）", page$message1, replacement = "")
+page$message1<-gsub(pattern = "、", page$message1, replacement = "")
+page$message1<-gsub(pattern = "》", page$message1, replacement = "")
+page$message1<-gsub(pattern = "《", page$message1, replacement = "")
+page$message1<-gsub(pattern = "/", page$message1, replacement = "")
+page$message1<-gsub(pattern = "\n", page$message1, replacement = "")
+page$message1<-gsub(pattern = ")", page$message1, replacement = "")
+#page$message1<-gsub(pattern = "(", page$message1, replacement = "")
+
+page$message1<-gsub(pattern = "攼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㹤", page$message1, replacement = "")
+page$message1<-gsub(pattern = "愼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸰", page$message1, replacement = "")
+page$message1<-gsub(pattern = "戼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㹣", page$message1, replacement = "")
+page$message1<-gsub(pattern = "攼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㹤", page$message1, replacement = "")
+
+page$message1<-gsub(pattern = "㹥", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㠼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸱", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸹", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸴", page$message1, replacement = "")
+
+page$message1<-gsub(pattern = "攼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㠼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸱", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸹", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸴", page$message1, replacement = "")
+
+page$message1<-gsub(pattern = "㤼", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸲", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸳", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸵", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸶", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸷", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸳", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸸", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㸶", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㹡", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㹢", page$message1, replacement = "")
+page$message1<-gsub(pattern = "㹦", page$message1, replacement = "")
+
+```
+# "jiebaR"  chinese word separate
+#### we can use WOrdcloud2 to plot Dynamics 用WOrdcloud2可畫動態圖
+
+```{r warning=FALSE}
+cc = worker()
+
+  
+wordcloud_table<-data.frame(table(cc[page$message1]))
+
+
+wordcloud_table<-wordcloud_table%>%
+                 filter(substr(wordcloud_table$Var1, start =1, stop =1)!="U")
+wordcloud2(wordcloud_table)
+wordcloud(wordcloud_table$Var1, wordcloud_table$Freq, min.freq = 40, random.order = F, ordered.colors = F ,colors = rainbow(50))
+
+
+
+```
+
+#改進
+####1.由於是水利署的fb，但水利 和署分開，應該建立新詞水利署
+####2.單字看起來重要性皆不大，的數量最高且原始檔有亂碼，刪除單詞
+```{r warning=FALSE}
+
+new_user_word(cc, "水利署", "n")
+wordcloud_table2<-data.frame(table(cc[page$message1]))
+wordcloud_table2<-wordcloud_table2%>%
+  filter(nchar(as.vector(wordcloud_table2$Var1))>=2)
+wordcloud2(wordcloud_table2)
+wordcloud(wordcloud_table2$Var1, wordcloud_table2$Freq, min.freq = 5, random.order = F, ordered.colors = F ,colors = rainbow(50))
+```
+由結果來看，機關的部份，水利署是主管機關，經濟部為上屬機關，降雨及颱風資訊主要來源為中央氣象局，故該三個字詞頻率最高係屬合理。
+防汛抗旱粉絲團分為防汛及抗旱，防汛的部份主要有颱風、災害、河川、防汛;在抗旱部份有如水庫、水資源、供水、水源、旱災等詞較多亦合於推測。
+
+

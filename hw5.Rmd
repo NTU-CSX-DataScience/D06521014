@@ -1,0 +1,77 @@
+---
+title: "HW5_iris_analysis"
+author: "D06521014"
+date: "2017年12月21日"
+output: html_document
+---
+##步驟一library packages 
+```{r, include=TRUE, warning=FALSE,results = "hide"}
+library(e1071)#SVM
+library(dplyr)
+library(lattice)
+library(ggplot2)
+library(caret)#cofusionmatrix
+```
+##步驟二 先看iris的結構
+```{r, warning=FALSE}
+summary(iris)
+```
+###1.花萼長度(Sepal.Length)
+###2.花萼寬度(Sepal.Width)
+###3.花瓣長度(Petal.Length)
+###4.花瓣寬度(Petal.Width)
+###5.品種(Species)：Setosa，Versicolor和Virginica各50筆
+
+
+##步驟三 先看iris變數之間的關係
+```{r, warning=FALSE}
+plot(iris)
+```
+由圖可以發現，花瓣長度(Petal.Length)、花瓣寬度(Petal.Width)之間線性關係最佳
+```{r, warning=FALSE}
+#花瓣長度(Petal.Length)、花瓣寬度(Petal.Width)以不同種花進行散布圖繪圖
+ggplot(data=iris) +                        
+    geom_point(aes(x=Petal.Length,           # 散布圖
+                   y=Petal.Width,
+                   color=Species))         # 把不同品種著色
+#花瓣長度(Petal.Length)、花瓣寬度(Petal.Width)以不同種花進行盒鬚圖繪圖
+qplot(x=Petal.Length,      
+        y=Petal.Width, 
+        data=iris, 
+        geom="boxplot",    # graph type is boxplot
+        color=Species)
+```
+
+
+##步驟四 anova分析，看Sepal.Length與Petal.Width在統計檢定上的差異
+###假設檢定的對應H0和H1分別如下：
+###H0:μ(Setosa)=μ(Versicolor)=μ(Virginica) 1.Petal.Width 2.Petal.Length
+###H1:至少有一種平均數和其他品種不相等
+```{r, warning=FALSE}
+modelPW<-lm(Petal.Width~Species,data=iris)
+anova(modelPW) 
+
+modelPL<- lm(Petal.Length~Species, data=iris)
+anova(modelPL)
+```
+檢定的結果 p-value < 2.2e-16 也遠小於 0.05 因此強力的否決了H0 
+
+
+##步驟五 svm分析
+```{r, warning=FALSE}
+#150組中 1~50 51-100 101-150分別為3種品種 要打散訓練才可以有比較好的結果
+testId = sample(nrow(iris),100, replace=FALSE)
+testId
+x <- subset(iris[testId,], select = -Species)
+y <- iris$Species[testId]
+#訓練
+trainingId = iris[-testId,]
+svm_model1 = 
+  svmfit = svm(Species ~ ., data = iris[-testId,])
+#訓練 confusionMatrix
+pred = predict(svm_model1,x)
+confusionMatrix(pred,y)
+
+```
+##準確率>0.9還算不錯
+##不過versicolor會有幾筆預測為virginica可再探討如何改善
